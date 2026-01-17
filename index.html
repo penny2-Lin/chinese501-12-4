@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神隱少女：語詞大冒險</title>
+    <style>
+        :root { --primary: #e63946; --bg: #f1faee; --text: #1d3557; }
+        body { 
+            margin: 0; padding: 0; font-family: 'PingFang TC', sans-serif;
+            background-color: var(--bg); color: var(--text);
+            height: 100dvh; display: flex; flex-direction: column; overflow: hidden;
+        }
+        header { background: #457b9d; color: white; text-align: center; padding: 1rem; flex-shrink: 0; }
+        h1 { margin: 0; font-size: 1.8rem; }
+        #main-container { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1rem; }
+        #word-bank { 
+            display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; 
+            background: white; border-radius: 10px; margin-bottom: 1rem; flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); justify-content: center;
+        }
+        .word-card { 
+            padding: 10px 18px; background: #a8dadc; border-radius: 20px; 
+            cursor: pointer; font-weight: bold; font-size: 1.2rem; transition: 0.3s;
+        }
+        .word-card:hover { transform: scale(1.1); background: #457b9d; color: white; }
+        #story-area { 
+            flex: 1; overflow-y: auto; background: white; padding: 2rem; 
+            border-radius: 10px; line-height: 2.5; font-size: 1.5rem; text-align: justify;
+        }
+        .drop-zone { 
+            display: inline-block; min-width: 120px; border-bottom: 3px solid red; 
+            padding: 0 10px 8px 10px; margin: 0 5px; cursor: pointer; color: #e63946; font-weight: bold;
+            text-align: center; height: auto; transition: 0.3s;
+        }
+        #controls { padding: 1rem; text-align: center; flex-shrink: 0; }
+        #check-btn { 
+            background: var(--primary); color: white; border: none; padding: 15px 40px; 
+            font-size: 1.5rem; border-radius: 50px; cursor: pointer; flex-shrink: 0;
+        }
+        .correct { color: #2a9d8f; }
+        .wrong { color: #e63946; text-decoration: line-through; }
+    </style>
+</head>
+<body>
+    <header><h1>神隱少女：語詞大冒險</h1></header>
+    <div id="main-container">
+        <div id="word-bank"></div>
+        <div id="story-area" id="content">
+            自從意外闖入神靈世界，千尋（小千）被迫在神祕的油屋工作。這座巨大的澡堂矗立在海邊，當海水漲潮時，窗外呈現一片<span class="drop-zone" data-ans="一望無際"></span>的蔚藍，美得令人屏息。這裡看似是一個與現實隔絕、<span class="drop-zone" data-ans="與世無爭"></span>的桃花源，但其實每個角落都充滿了嚴苛的規則，稍有不慎就會忘記自己的名字。
+            某個午後，千尋發現白龍化身的白龍身受重傷，在空中被無數的小紙鳥追擊。當白龍虛弱地墜落在閣樓時，雪白的鱗片已經變得<span class="drop-zone" data-ans="傷痕累累"></span>，鮮血染紅了地板。千尋看著昏迷不醒的白龍，心中<span class="drop-zone" data-ans="驚恐萬分"></span>，她知道若不儘快採取行動，白龍將會消失。為了救回最重要的朋友，她決定踏上一段未知且危險的旅程。
+            千尋鼓起勇氣，拿著錢婆婆的車票跳上了行駛在海面上的列車。車窗外流動的雲影與水中廢墟交織成<span class="drop-zone" data-ans="引人入勝"></span>的奇景，讓人分不清是夢境還是現實。然而，路途並不平順，列車在暴雨中<span class="drop-zone" data-ans="載浮載沉"></span>，彷彿隨時會被大浪吞沒。在路途中，千尋曾因車廂震盪險些跌落海中，那次<span class="drop-zone" data-ans="死裡逃生"></span>的經歷讓她嚇出了一身冷汗，卻也讓她意志更加堅定。
+            最終，千尋抵達了錢婆婆的小屋。這裡沒有油屋那些供神明享用的豪華<span class="drop-zone" data-ans="山珍海味"></span>，只有簡單的茶點與自己耕種的蔬菜。錢婆婆帶著大家過著<span class="drop-zone" data-ans="自給自足"></span>的生活，雖然樸素，卻充滿溫度。看著錢婆婆慈祥的笑容，千尋一邊編織著友誼的髮圈，一邊<span class="drop-zone" data-ans="自得其樂"></span>。她明白，真正的強大並非來自魔法，而是守護他人的決心。
+        </div>
+    </div>
+    <div id="controls"><button id="check-btn">檢查任務結果</button></div>
+
+    <script>
+        const words = ["一望無際", "與世無爭", "傷痕累累", "驚恐萬分", "引人入勝", "載浮載沉", "死裡逃生", "山珍海味", "自給自足", "自得其樂"];
+        const bank = document.getElementById('word-bank');
+        let selectedWord = null;
+
+        // 初始化字卡
+        words.sort(() => Math.random() - 0.5).forEach(w => {
+            const btn = document.createElement('div');
+            btn.className = 'word-card';
+            btn.textContent = w;
+            btn.onclick = () => selectedWord = w;
+            bank.appendChild(btn);
+        });
+
+        // 點擊空格邏輯
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.onclick = () => {
+                if (selectedWord) {
+                    zone.textContent = selectedWord;
+                    selectedWord = null;
+                } else {
+                    zone.textContent = "";
+                }
+            };
+        });
+
+        // 檢查結果
+        document.getElementById('check-btn').onclick = () => {
+            let score = 0;
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                if (zone.textContent === zone.dataset.ans) {
+                    zone.className = 'drop-zone correct';
+                    score++;
+                } else {
+                    zone.className = 'drop-zone wrong';
+                }
+            });
+            const feedback = score === words.length ? "太棒了！你找回了自己的名字！" : "湯婆婆正在看著你，再試一次吧！";
+            alert(`${feedback} (得分: ${score}/${words.length})`);
+        };
+    </script>
+</body>
+</html>
